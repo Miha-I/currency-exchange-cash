@@ -1,0 +1,48 @@
+package ua.security;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@SuppressWarnings("unused")
+public class AccessDeniedEntryPoint implements AuthenticationEntryPoint {
+
+    private String accessDeniedPage;
+
+    private boolean useForward = false;
+
+    public AccessDeniedEntryPoint(String accessDeniedPage){
+        this.accessDeniedPage = accessDeniedPage;
+    }
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        if (!response.isCommitted()) {
+            if (useForward) {
+                request.getRequestDispatcher(accessDeniedPage).forward(request, response);
+                return;
+            }
+            response.sendRedirect(accessDeniedPage);
+        }
+    }
+
+    public void setAccessDeniedPage(String accessDeniedPage){
+        this.accessDeniedPage = accessDeniedPage;
+    }
+
+    public String getAccessDeniedPage() {
+        return accessDeniedPage;
+    }
+
+    public boolean isUseForward() {
+        return useForward;
+    }
+
+    public void setUseForward(boolean useForward) {
+        this.useForward = useForward;
+    }
+}
